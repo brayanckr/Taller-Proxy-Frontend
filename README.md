@@ -32,3 +32,8 @@ Open http://localhost:3000.
 ## Deploy (Vercel)
 
 Static project: framework preset "Other", no build command, output directory = repository root.
+
+## Production
+
+- Frontend (Vercel): https://taller-proxy-frontend-tau.vercel.app
+- Backend (Railway): https://backend-production-7a2b.up.railway.app
