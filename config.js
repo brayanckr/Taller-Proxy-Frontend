@@ -1,11 +1,10 @@
-// Demo configuration. In a real deployment the viewer key would come from a login flow.
+const PRODUCTION_API_URL = 'https://REPLACE-WITH-RAILWAY-URL';
+const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+
 export const config = {
-  apiUrl: window.LOGS_API_URL || 'http://localhost:4000',
-  viewerKey: 'dashboard-key',
+  apiUrl: window.API_URL || (isLocal ? 'http://localhost:8080' : PRODUCTION_API_URL),
   refreshMs: 3000,
-  producers: [
-    { name: 'auth-service', apiKey: 'producer-key-auth' },
-    { name: 'payments-service', apiKey: 'producer-key-payments' },
-    { name: 'orders-service', apiKey: 'producer-key-orders' },
-  ],
+  chartPoints: 20,
+  pageSize: 10,
+  errorRateThreshold: 15,
 };
