@@ -3,83 +3,100 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0e14">
   <title>Observabilidad de Microservicios</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <div>
-      <h1>Observabilidad de Microservicios</h1>
-      <p class="subtitle">Proxy de auditoría y logging para Inventario, Pedidos y Pagos</p>
-    </div>
-    <div class="topbar-actions">
-      <span class="status" id="status" role="status" aria-live="polite">
-        <span class="dot" data-state="unknown"></span>
-        <span id="status-text">Conectando…</span>
-      </span>
-      <button type="button" id="simulate">Simular carga</button>
-    </div>
-  </header>
+  <div class="shell">
+    <header class="banner" id="banner">
+      <div class="banner-id">
+        <span class="shield" aria-hidden="true"><i data-lucide="shield-check"></i></span>
+        <div>
+          <h1>Observabilidad de Microservicios</h1>
+          <p class="subtitle">Proxy de auditoría y logging entre el cliente y Inventario, Pedidos y Pagos</p>
+        </div>
+      </div>
 
-  <main>
+      <div class="banner-status" role="status" aria-live="polite">
+        <span class="badge" id="conn-badge" data-state="unknown"><i data-lucide="plug-zap"></i><span id="conn-text">Conectando</span></span>
+        <span class="badge" id="tls-badge" data-state="neutral"><i data-lucide="lock"></i><span id="tls-text">Canal</span></span>
+        <span class="badge" id="route-badge" data-state="neutral"><i data-lucide="route"></i><span>Proxy redirigiendo</span></span>
+        <code class="endpoint" id="endpoint"></code>
+      </div>
+
+      <dl class="quick" aria-label="Métricas rápidas">
+        <div><dt><i data-lucide="activity"></i>Llamadas totales</dt><dd id="m-total">0</dd></div>
+        <div><dt><i data-lucide="triangle-alert"></i>Servicios en alerta</dt><dd id="m-alerts">0</dd></div>
+        <div><dt><i data-lucide="calendar-clock"></i>Movimientos hoy</dt><dd id="m-today">0</dd></div>
+        <div><dt><i data-lucide="timer"></i>Latencia del proxy</dt><dd id="m-latency">–</dd></div>
+      </dl>
+
+      <button type="button" class="cta" id="simulate">
+        <i data-lucide="zap"></i><span>Simular carga</span>
+      </button>
+    </header>
+
     <p class="feedback" id="feedback" role="status" aria-live="polite"></p>
 
-    <section class="cards" id="service-cards" aria-label="Resumen por servicio"></section>
+    <section class="services" id="service-cards" aria-label="Estado por servicio"></section>
 
-    <section class="panel">
-      <h2>Tiempo de respuesta de las últimas 20 llamadas</h2>
+    <section class="panel chart-panel">
+      <div class="panel-head">
+        <h2><i data-lucide="line-chart"></i>Tiempo de respuesta, últimas 20 llamadas</h2>
+      </div>
       <div class="chart-box"><canvas id="chart" aria-label="Gráfica de tiempos de respuesta por servicio" role="img"></canvas></div>
     </section>
 
-    <section class="panel">
+    <section class="panel logs-panel">
       <div class="panel-head">
-        <h2>Logs en tiempo real</h2>
-        <span class="muted">Se actualiza cada 3 segundos</span>
+        <h2><i data-lucide="scroll-text"></i>Logs en tiempo real</h2>
+        <span class="live"><span class="live-dot"></span>Actualiza cada 3 s</span>
       </div>
 
       <form class="filters" id="filters">
-        <label>Servicio
-          <select name="service">
-            <option value="">Todos</option>
-            <option value="InventoryService">Inventario</option>
-            <option value="OrderService">Pedidos</option>
-            <option value="PaymentService">Pagos</option>
-          </select>
-        </label>
-        <label>Estado
-          <select name="status">
-            <option value="">Todos</option>
-            <option value="SUCCESS">Exitoso</option>
-            <option value="ERROR">Con error</option>
-          </select>
-        </label>
-        <label>Desde
-          <input type="datetime-local" name="from">
-        </label>
-        <label>Hasta
-          <input type="datetime-local" name="to">
-        </label>
-        <button type="button" class="secondary" id="clear-filters">Limpiar filtros</button>
+        <div class="chip-group" role="group" aria-label="Filtrar por servicio" data-group="service">
+          <button type="button" class="chip" data-value="" aria-pressed="true"><i data-lucide="layers"></i>Todos</button>
+          <button type="button" class="chip" data-value="InventoryService" aria-pressed="false"><i data-lucide="boxes"></i>Inventario</button>
+          <button type="button" class="chip" data-value="OrderService" aria-pressed="false"><i data-lucide="shopping-cart"></i>Pedidos</button>
+          <button type="button" class="chip" data-value="PaymentService" aria-pressed="false"><i data-lucide="credit-card"></i>Pagos</button>
+        </div>
+        <div class="chip-group" role="group" aria-label="Filtrar por estado" data-group="status">
+          <button type="button" class="chip" data-value="" aria-pressed="true">Todos</button>
+          <button type="button" class="chip chip-ok" data-value="SUCCESS" aria-pressed="false"><i data-lucide="circle-check"></i>Exitoso</button>
+          <button type="button" class="chip chip-bad" data-value="ERROR" aria-pressed="false"><i data-lucide="circle-x"></i>Con error</button>
+        </div>
+        <label>Desde <input type="datetime-local" name="from"></label>
+        <label>Hasta <input type="datetime-local" name="to"></label>
+        <button type="button" class="ghost" id="clear-filters"><i data-lucide="rotate-ccw"></i>Limpiar</button>
       </form>
 
       <div class="table-wrap">
         <table>
           <thead>
-            <tr><th></th><th>Fecha</th><th>ID de solicitud</th><th>Servicio</th><th>Operación</th><th>Duración</th><th>Estado</th></tr>
+            <tr><th><span class="sr-only">Detalles</span></th><th>Hora</th><th>Solicitud</th><th>Servicio</th><th>Operación</th><th class="num">Duración</th><th>Estado</th></tr>
           </thead>
           <tbody id="logs-body"></tbody>
         </table>
-        <p class="empty" id="logs-empty" hidden>No hay logs con estos filtros. Usa «Simular carga» para generar llamadas.</p>
+        <div class="empty" id="logs-empty" hidden>
+          <i data-lucide="inbox"></i>
+          <p>No hay logs con estos filtros.</p>
+          <span>Pulsa «Simular carga» para generar llamadas.</span>
+        </div>
       </div>
 
       <nav class="pager" aria-label="Paginación">
-        <button type="button" class="secondary" id="prev">Anterior</button>
-        <span id="page-info" class="muted"></span>
-        <button type="button" class="secondary" id="next">Siguiente</button>
+        <button type="button" class="ghost" id="prev"><i data-lucide="chevron-left"></i>Anterior</button>
+        <span id="page-info" class="mono muted"></span>
+        <button type="button" class="ghost" id="next">Siguiente<i data-lucide="chevron-right"></i></button>
       </nav>
     </section>
-  </main>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>
