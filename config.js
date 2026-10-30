@@ -1,4 +1,4 @@
-const PRODUCTION_API_URL = 'https://REPLACE-WITH-RAILWAY-URL';
+const PRODUCTION_API_URL = 'https://backend-production-7a2b.up.railway.app';
 const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
 export const config = {
