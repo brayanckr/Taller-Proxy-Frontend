@@ -1,0 +1,38 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "space grotesk",
+        "createdAt": "2026-10-30T20:43:55.554Z",
+        "reason": "user confirmed: the redesign brief names Space Grotesk for headings"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-10-30T20:43:55.821Z",
+        "reason": "user confirmed: the redesign brief names Inter for body text"
+      },
+      {
+        "rule": "pulsing-dot",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-30T20:43:56.096Z",
+        "reason": "dot sits next to the 3-second polling label and reflects genuinely live data"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-10-30T20:45:14.502Z",
+        "reason": "measured: every theme text/background pair is at least 6.1:1, above WCAG AA 4.5:1; detector cannot resolve CSS variables"
+      }
+    ]
+  }
+}
